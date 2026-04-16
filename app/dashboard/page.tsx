@@ -235,8 +235,8 @@ export default function DashboardPage() {
                   .sort((a, b) => new Date(b.completedAt ?? 0).getTime() - new Date(a.completedAt ?? 0).getTime())
                   .slice(0, 5)
                   .map((p, index) => {
-                    const module = scenarioModules.find(m => m.id === p.moduleId)
-                    const scenario = module?.scenarios.find(s => s.id === p.scenarioId)
+                    const scenarioModule = scenarioModules.find(m => m.id === p.moduleId)
+                    const scenario = scenarioModule?.scenarios.find(s => s.id === p.scenarioId)
                     const score = Math.round(
                       ((p.scores.leadershipStyle ?? 50) + 
                        (p.scores.businessImpact ?? 50) + 
@@ -256,7 +256,7 @@ export default function DashboardPage() {
                               {scenario?.title ?? 'Unknown Scenario'}
                             </p>
                             <p className="text-sm text-bosch-gray-500">
-                              {module?.title ?? 'Unknown Module'}
+                              {scenarioModule?.title ?? 'Unknown Module'}
                             </p>
                           </div>
                         </div>

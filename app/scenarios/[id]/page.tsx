@@ -35,7 +35,7 @@ export default function ScenarioPage({ params }: PageProps) {
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
 
-  const module = getModuleById(moduleId)
+  const scenarioModule = getModuleById(moduleId)
   const currentNode = getCurrentNode(state)
 
   useEffect(() => {
@@ -53,19 +53,11 @@ export default function ScenarioPage({ params }: PageProps) {
     }
   }, [state.isComplete, state.currentScenario, state.scores, state.decisionsPath, moduleId])
 
-  if (!module) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-bosch-gray-900 mb-2">Module Not Found</h1>
-          <p className="text-bosch-gray-500 mb-4">The requested training module could not be found.</p>
-          <Link href="/" className="btn-primary">
-            Return Home
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  useEffect(() => {
+    if (currentNode?.isEnding && !state.isComplete) {
+      dispatch({ type: 'COMPLETE_SCENARIO' })
+    }
+  }, [currentNode, state.isComplete])
 
   const handleStartScenario = (scenario: Scenario) => {
     setSelectedScenario(scenario)
@@ -106,11 +98,19 @@ export default function ScenarioPage({ params }: PageProps) {
     }
   }
 
-  useEffect(() => {
-    if (currentNode?.isEnding && !state.isComplete) {
-      dispatch({ type: 'COMPLETE_SCENARIO' })
-    }
-  }, [currentNode, state.isComplete])
+  if (!scenarioModule) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-bosch-gray-900 mb-2">Module Not Found</h1>
+          <p className="text-bosch-gray-500 mb-4">The requested training module could not be found.</p>
+          <Link href="/" className="btn-primary">
+            Return Home
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   const handleRestart = () => {
     if (selectedScenario) {
@@ -146,17 +146,17 @@ export default function ScenarioPage({ params }: PageProps) {
 
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-bosch-gray-900 mb-2">{module.title}</h1>
-            <p className="text-lg text-bosch-gray-600">{module.description}</p>
+            <h1 className="text-3xl font-bold text-bosch-gray-900 mb-2">{scenarioModule.title}</h1>
+            <p className="text-lg text-bosch-gray-600">{scenarioModule.description}</p>
             
             <div className="flex items-center gap-4 mt-4">
               <span className="text-sm text-bosch-gray-500 flex items-center gap-1">
                 <Clock className="w-4 h-4" />
-                {module.estimatedTime} min
+                {scenarioModule.estimatedTime} min
               </span>
               <span className="text-sm text-bosch-gray-500 flex items-center gap-1">
                 <BookOpen className="w-4 h-4" />
-                {module.scenarios.length} scenario{module.scenarios.length !== 1 ? 's' : ''}
+                {scenarioModule.scenarios.length} scenario{scenarioModule.scenarios.length !== 1 ? 's' : ''}
               </span>
             </div>
           </div>
@@ -164,7 +164,7 @@ export default function ScenarioPage({ params }: PageProps) {
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-bosch-gray-900">Available Scenarios</h2>
             
-            {module.scenarios.map((scenario, index) => (
+            {scenarioModule.scenarios.map((scenario, index) => (
               <div
                 key={scenario.id}
                 className="bg-white rounded-xl border border-bosch-gray-200 p-6 hover:border-bosch-blue-400 hover:shadow-md transition-all"
@@ -227,7 +227,7 @@ export default function ScenarioPage({ params }: PageProps) {
               </div>
               <div>
                 <h1 className="text-sm font-semibold text-bosch-gray-900">{selectedScenario.title}</h1>
-                <p className="text-xs text-bosch-gray-500">{module.title}</p>
+                <p className="text-xs text-bosch-gray-500">{scenarioModule.title}</p>
               </div>
             </div>
 
